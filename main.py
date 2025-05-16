@@ -10,22 +10,16 @@ def algo_ship_placement(x, y, taille, orientation, ship_list):
         print(f"Taille {taille} -- Orientation {orientation} = {y + taille}")
         return False
 
-    if orientation == "horizontal":
-        for i in range(0, taille):
-            for ship in ship_list:
-                for chunk in ship.chunks_list:
-                    if chunk.x == x + i:
-                        print(f"{chunk.x} {x+i}")
+    """for i in range(taille):
+        for ship in ship_list:
+            for chunk in ship.chunks_list:
+                if orientation == "horizontal":
+                    if chunk.x == x+i and y == y:
                         return False
+                if orientation == "vertical":
+                    if chunk.x == x and y == y+i:
+                        return False"""
 
-    if orientation == "vertical":
-        for i in range(0, taille):
-            print(i)
-            for ship in ship_list:
-                for chunk in ship.chunks_list:
-                    if chunk.y == y + i:
-                        print(f"{chunk.y} {y+i}")
-                        return False
     return True
 
 
@@ -45,10 +39,12 @@ class Ship:
         self.chunks_list = []
 
     def generate_chunks(self):
-        for i in range(0, self.taille):
+        for i in range(self.taille):
             if self.orientation == "horizontal":
+                print(f"Génération du chunk en x{self.x+i} y{self.y}")
                 self.chunks_list.append(Chunk(self.x+i, self.y))
             if self.orientation == "vertical":
+                print(f"Génération du chunk en x{self.x} y{self.y+i}")
                 self.chunks_list.append(Chunk(self.x, self.y+i))
 
 
@@ -65,28 +61,39 @@ class Ennemy:
             orientation = r.choice(["horizontal", "vertical"])
             x = 0
             y = 0
+            x_p = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+            y_p = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
             algo = False
             while algo is False:
-                x_p = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-                y_p = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
                 x = r.choice(x_p)
                 y = r.choice(y_p)
+                print(f"Génération d'un bateau de taille {ship_taille} {orientation} en x{x}, y{y} \n"
+                      f"xp {x_p}"
+                      f"yp {y_p}")
                 algo = algo_ship_placement(x, y, ship_taille, orientation, self.ship_list)
                 if orientation == "horizontal":
-                    x_p.pop(x)
+                    x_p.pop(x-(10-len(x_p)))
                 if orientation == "vertical":
-                    y_p.pop(y)
-                print("---- On ressaie ----")
+                    y_p.pop(y-(10-len(y_p)))
+                print(x_p)
+                print(y_p)
 
 
             ship = Ship(x, y, ship_taille, orientation)
-            self.ship_list.append(ship)
             ship.generate_chunks()
+            self.ship_list.append(ship)
 
 
     def lancer_une_torpille(self):
         x = r.randint(0, 9)
+        y = r.randint(0, 9)
 
+    def toucher(self, x, y):
+        for ship in self.ship_list:
+            for chunk in ship.chunks_list:
+                if chunk.x == x and chunk.y == y:
+                    return True
+        return False
 
 
 
