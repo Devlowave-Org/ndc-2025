@@ -8,14 +8,14 @@ def algo_ship_placement(x, y, taille, orientation, ship_list):
     if orientation == "vertical" and y + taille > 9:
         return False
     for ship in ship_list:
-        for chunk in ship.chunks:
+        for chunk in ship.chunks_list:
             for i in range(0, taille):
                 if chunk.x == x + i and chunk.y == y + i:
                     return False
     return True
 
 
-class Chunck:
+class Chunk:
     def __init__(self, x, y, state="vivant"):
         self.x = x
         self.y = y
@@ -32,7 +32,10 @@ class Ship:
 
     def generate_chunks(self):
         for i in range(0, self.taille):
-            self.chunks_list.append(Chunck(self.x, self.y))
+            if self.orientation == "horizontal":
+                self.chunks_list.append(Chunk(self.x+i, self.y))
+            if self.orientation == "vertical":
+                self.chunks_list.append(Chunk(self.x, self.y+i))
 
 
 
@@ -42,6 +45,7 @@ class Ennemy:
         self.ship_list = []
 
     def generate_ships(self):
+        # On génère les bateaux en fonction de leur taille
         for ship_taille in self.ship_tailles:
             x = r.randint(0, 10)
             y = r.randint(0, 10)
@@ -52,6 +56,10 @@ class Ennemy:
                 orientation = r.choice(["horizontal", "vertical"])
 
             self.ship_list.append(Ship(x, y, ship_taille, orientation))
+        # On génère les chunks de chaque bateau
+        for ship in self.ship_list:
+            ship.generate_chunks()
+
 
 
 class Grid:
